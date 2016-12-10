@@ -38,14 +38,16 @@
 #include "loadlib/wdt.h"
 #include <fcntl.h>
 
+
 #if defined( __GNUC__ )
-    #define _open   open
-    #define _close close
-    #ifndef O_BINARY
-        #define O_BINARY 0
-    #endif
+#include <unistd.h>
+#define _open   open
+#define _close close
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 #else
-    #include <io.h>
+#include <io.h>
 #endif
 
 #ifdef O_LARGEFILE
