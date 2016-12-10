@@ -12,6 +12,7 @@
 language: cpp
 
 compiler:
+  - gcc
   - clang
 git:
   depth: 1
@@ -23,8 +24,8 @@ before_install:
   - echo "yes" | sudo add-apt-repository 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.5 main'
   - wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
   - sudo apt-get -qq update
-  - sudo apt-get -qq install build-essential libtool libace-dev gcc-4.8 g++-4.8 make cmake-data cmake openssl clang-3.5
-  - sudo apt-get -qq install libssl-dev libmysqlclient-dev libmysql++-dev libreadline6-dev zlib1g-dev libbz2-dev libzmq3-dev
+  - sudo apt-get -qq install build-essential libtool libace-dev gcc-4.8 g++-4.8 make cmake-data cmake clang-3.5
+  - sudo apt-get -qq install libreadline6-dev zlib1g-dev libbz2-dev libzmq3-dev
   - export CC=clang-3.5 CXX=clang++-3.5
   - git config --global user.name "Travis CI"
   - git config --global user.email "user@example.com"
