@@ -14,7 +14,7 @@ It is completely open source; community involvement is highly encouraged.
 
 If you wish to contribute ideas or code please visit our site linked below or
 make pull requests to our 
-[Github repository](https://github.com/ProjectSkyfire/SkyFire.548).
+[Github repository](https://github.com/SkyFire243/Core).
 
 For further information on the SkyFire project, please visit our project website at 
 [projectskyfire.org](http://www.projectskyfire.org).
