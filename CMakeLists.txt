@@ -1,7 +1,7 @@
-# Copyright (C) 2010-2012 Project SkyFire <http://www.projectskyfire.org/>
-# Copyright (C) 2010-2012 Oregon <http://www.oregoncore.com/>
-# Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
-# Copyright (C) 2005-2012 MaNGOS <http://www.getmangos.com/>
+# Copyright (C) 2010-2017 Project SkyFire <https://www.projectskyfire.org/>
+# Copyright (C) 2010-2017 Oregon <http://www.oregoncore.com/>
+# Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
+# Copyright (C) 2005-2017 MaNGOS <http://www.getmangos.com/>
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -12,11 +12,14 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 # Set projectname (must be done AFTER setting configurationtypes)
-project(SkyFireONE)
+project(SkyFire_2.4.3)
 
 # CMake policies (can not be handled elsewhere)
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.9)
 cmake_policy(SET CMP0005 OLD)
+if(POLICY CMP0043)
+  cmake_policy(SET CMP0043 OLD) # Disable 'Ignore COMPILE_DEFINITIONS_<Config> properties'
+endif(POLICY CMP0043)
 
 # Set RPATH-handing (CMake parameters)
 set(CMAKE_SKIP_BUILD_RPATH 0)

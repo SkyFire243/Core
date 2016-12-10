@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2011-2017 Project SkyFire <https://www.projectskyfire.org/>
  * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
  *
@@ -23,7 +23,7 @@
 #include "Define.h"
 #include "revision.h"
 
-#define _PACKAGENAME "SkyFireONE"
+#define _PACKAGENAME "SkyFire_2.4.3"
 
 #if SKYFIRE_ENDIAN == SKYFIRE_BIGENDIAN
 # define _ENDIAN_STRING "big-endian"

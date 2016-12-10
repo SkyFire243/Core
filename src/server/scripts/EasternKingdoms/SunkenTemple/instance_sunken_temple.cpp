@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
  * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
  * Copyright (C) 2006-2013 kb_z
  *

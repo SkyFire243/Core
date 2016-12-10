@@ -1,17 +1,17 @@
 @ECHO OFF
 SET ver=2.4.3
-TITLE SkyFireONE %ver% Simple Project Building Tool
+TITLE SkyFire_2.4.3 %ver% Simple Project Building Tool
 COLOR 0A
 rem Credits to:
 rem MangosR2 and to /Dev/RSA for the base installer
-rem SkyFireONE's current version by Aptiva.
+rem SkyFire_2.4.3's current version by Aptiva.
 :TOP
 CLS
 color 3f
 ECHO.
 ECHO          ษออออออออออออออออออออออออออออออออป
 ECHO          บ                                บ
-ECHO          บ       SkyFireONE (%ver%)       บ
+ECHO          บ       SkyFire_2.4.3 (%ver%)       บ
 ECHO          บ     Simple Project Build       บ
 ECHO          บ            and                 บ
 ECHO          บ      Installation Tool         บ
@@ -27,8 +27,8 @@ REM     this fixes native pre-builds for VC10 (MS Visual studio 10 Pro)
 REM     and VC11 (MS Visual studio 11 or 2012 Pro/Ultimate)
 REM     Warning! VS Express edition is not supported!
 SET compiler=VC11
-REM Install path for SkyFireONE (in this be created ./bin and ./etc folders)
-SET INSTALL_PATH="C:\\GAMES\\SkyFireONE"
+REM Install path for SkyFire_2.4.3 (in this be created ./bin and ./etc folders)
+SET INSTALL_PATH="C:\\GAMES\\SkyFire_2.4.3"
 rem
 rem This Setting is for Build platform configuration. (Check Dir paths!)
 rem     Options: Win32, Win64. (Warning! Win64 build possible only on 64-bit main OS)!

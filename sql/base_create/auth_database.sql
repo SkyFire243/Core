@@ -227,7 +227,7 @@ CREATE TABLE `uptime` (
   `startstring` varchar(64) NOT NULL default '',
   `uptime` bigint(20) unsigned NOT NULL default '0',
   `maxplayers` smallint(5) unsigned NOT NULL default '0',
-  `revision` VARCHAR(255) NOT NULL DEFAULT 'SkyFireONE',
+  `revision` VARCHAR(255) NOT NULL DEFAULT 'SkyFire_2.4.3',
   PRIMARY KEY  (`realmid`,`starttime`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Uptime system';
 /*!40101 SET character_set_client = @saved_cs_client */;

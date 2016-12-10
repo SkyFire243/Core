@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
  * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
@@ -131,7 +131,7 @@ int Master::Run()
     sLog->outString("   \\/\\_____\\ \\_\\ \\_\\/\\_____\\ \\_\\  \\ \\_\\ \\_\\ \\_\\ \\_____\\ ");
     sLog->outString("    \\/_____/\\/_/\\/_/\\/_____/\\/_/   \\/_/\\/_/ /_/\\/_____/ ");
     sLog->outString("   Project SkyFireEmu 2012(c) Open-sourced Game Emulation ");
-    sLog->outString("           <http://www.projectskyfire.org/> ");
+    sLog->outString("           <https://www.projectskyfire.org/> ");
     sLog->outString(" ");
 
 #ifdef USE_SFMT_FOR_RNG

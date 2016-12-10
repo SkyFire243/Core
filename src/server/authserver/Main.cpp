@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
  * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
  *
@@ -111,7 +111,7 @@ extern int main(int argc, char **argv)
     sLog->outString("   \\/\\_____\\ \\_\\ \\_\\/\\_____\\ \\_\\  \\ \\_\\ \\_\\ \\_\\ \\_____\\ ");
     sLog->outString("    \\/_____/\\/_/\\/_/\\/_____/\\/_/   \\/_/\\/_/ /_/\\/_____/ ");
     sLog->outString("  Project SkyFireEmu 2012(c) Open-sourced Game Emulation ");
-    sLog->outString("           <http://www.projectskyfire.org/> ");
+    sLog->outString("           <https://www.projectskyfire.org/> ");
     sLog->outString("<Ctrl-C> to stop.\n");
 
     sLog->outDetail("%s (Library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
