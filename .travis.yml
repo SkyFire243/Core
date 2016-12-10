@@ -38,7 +38,7 @@ install:
  
 script:
   - $CXX --version
-  - cd bin
+  - cd build
   - make -j 8 -k && make install
 
 notifications:
