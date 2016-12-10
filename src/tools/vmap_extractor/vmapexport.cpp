@@ -48,7 +48,9 @@
 #include "dbcfile.h"
 #include "wmo.h"
 #include "mpq_libmpq04.h"
+#include "vmapexport.h"
 
+//------------------------------------------------------------------------------
 // Defines
 #define MPQ_BLOCK_SIZE 0x1000
 
@@ -454,7 +456,7 @@ int main(int argc, char ** argv)
 
     // Create the working directory
     if (mkdir(szWorkDirWmo
-#ifdef _XOPEN_UNIX
+#if defined(_XOPEN_UNIX) || defined(unix)
                     , 0711
 #endif
                     ))

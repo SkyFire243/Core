@@ -114,14 +114,24 @@ void CreateDir( const std::string& Path )
 
 bool FileExists( const char* FileName )
 {
-    int fp = _open(FileName, OPEN_FLAGS);
+#ifdef WIN32
+    #define open _open
+    #define close _close
+#endif
+
+    int fp = open(FileName, OPEN_FLAGS);
     if (fp != -1)
     {
-        _close(fp);
+        close(fp);
         return true;
     }
 
     return false;
+
+#ifdef WIN32
+    #undef open
+    #undef close
+#endif
 }
 
 void Usage(char* prg)
