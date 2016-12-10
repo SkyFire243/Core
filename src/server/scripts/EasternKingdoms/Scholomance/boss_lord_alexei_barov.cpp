@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
+ * Copyright (C) 2010-2017 Project SkyFire <https://www.projectskyfire.org/>
+ * Copyright (C) 2010-2017 Oregon <http://www.oregoncore.com/>
  * Copyright (C) 2006-2008 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
