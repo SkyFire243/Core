@@ -14,23 +14,23 @@
 # This to stop a few silly crashes that could have been avoided IF people
 # weren't doing some -O3 psychooptimizations etc.
 
-if(CMAKE_COMPILER_IS_GNUCXX AND NOT MINGW)
+if(CMAKE_COMPILER_IS_GNUCXX)
   add_definitions(-fno-delete-null-pointer-checks)
 endif()
 
-if(WIN32)
-  list(APPEND sources_windows
-    ${CMAKE_SOURCE_DIR}/src/server/shared/Utilities/ServiceWin32.cpp
-    ${CMAKE_SOURCE_DIR}/src/server/shared/Utilities/ServiceWin32.h
+if( SERVERS )
+  set(sources_Debugging
+    ${CMAKE_SOURCE_DIR}/src/server/shared/Debugging/WheatyExceptionReport.cpp
+    ${CMAKE_SOURCE_DIR}/src/server/shared/Debugging/WheatyExceptionReport.h
   )
-endif(WIN32)
-
-if(TOOLS)
+  add_subdirectory(shared)
+  add_subdirectory(game)
   add_subdirectory(collision)
-endif(TOOLS)
-
-add_subdirectory(shared)
-add_subdirectory(game)
-add_subdirectory(authserver)
-add_subdirectory(scripts)
-add_subdirectory(worldserver)
+  add_subdirectory(authserver)
+  add_subdirectory(scripts)
+  add_subdirectory(worldserver)
+else()
+  if( TOOLS )
+    add_subdirectory(collision)
+  endif()
+endif()

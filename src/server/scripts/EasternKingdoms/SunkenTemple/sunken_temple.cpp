@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2010-2017 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2017 Oregon <http://www.oregoncore.com/>
+ * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
+ * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
  * Copyright (C) 2006-2013 kb_z
  *
  * This program is free software; you can redistribute it and/or modify it

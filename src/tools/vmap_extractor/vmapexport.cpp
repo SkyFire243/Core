@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2010-2017 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2017 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2017 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
+ * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
+ * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -48,9 +48,7 @@
 #include "dbcfile.h"
 #include "wmo.h"
 #include "mpq_libmpq04.h"
-#include "vmapexport.h"
 
-//------------------------------------------------------------------------------
 // Defines
 #define MPQ_BLOCK_SIZE 0x1000
 
@@ -456,7 +454,7 @@ int main(int argc, char ** argv)
 
     // Create the working directory
     if (mkdir(szWorkDirWmo
-#if defined(_XOPEN_UNIX) || defined(unix)
+#ifdef _XOPEN_UNIX
                     , 0711
 #endif
                     ))

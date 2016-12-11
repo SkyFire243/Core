@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2010-2017 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2017 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2017 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
+ * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
+ * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -38,16 +38,14 @@
 #include "loadlib/wdt.h"
 #include <fcntl.h>
 
-
 #if defined( __GNUC__ )
-#include <unistd.h>
-#define _open   open
-#define _close close
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
+    #define _open   open
+    #define _close close
+    #ifndef O_BINARY
+        #define O_BINARY 0
+    #endif
 #else
-#include <io.h>
+    #include <io.h>
 #endif
 
 #ifdef O_LARGEFILE
@@ -114,24 +112,14 @@ void CreateDir( const std::string& Path )
 
 bool FileExists( const char* FileName )
 {
-#ifdef WIN32
-    #define open _open
-    #define close _close
-#endif
-
-    int fp = open(FileName, OPEN_FLAGS);
+    int fp = _open(FileName, OPEN_FLAGS);
     if (fp != -1)
     {
-        close(fp);
+        _close(fp);
         return true;
     }
 
     return false;
-
-#ifdef WIN32
-    #undef open
-    #undef close
-#endif
 }
 
 void Usage(char* prg)
