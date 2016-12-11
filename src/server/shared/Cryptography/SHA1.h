@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -18,13 +17,14 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AUTH_Sha1_H
-#define _AUTH_Sha1_H
+#ifndef _AUTH_SHA1_H
+#define _AUTH_SHA1_H
 
-#include "Common.h"
+#include "Define.h"
+#include <string>
 #include <openssl/sha.h>
-#include <openssl/crypto.h>
-#include "BigNumber.h"
+
+class BigNumber;
 
 class SHA1Hash
 {
@@ -32,8 +32,7 @@ class SHA1Hash
         SHA1Hash();
         ~SHA1Hash();
 
-        void UpdateFinalizeBigNumbers(BigNumber *bn0, ...);
-        void UpdateBigNumbers(BigNumber *bn0, ...);
+        void UpdateBigNumbers(BigNumber* bn0, ...);
 
         void UpdateData(const uint8 *dta, int len);
         void UpdateData(const std::string &str);
@@ -42,9 +41,7 @@ class SHA1Hash
         void Finalize();
 
         uint8 *GetDigest(void) { return mDigest; };
-        int GetLength(void) { return SHA_DIGEST_LENGTH; };
-
-        BigNumber GetBigNumber();
+        int GetLength(void) const { return SHA_DIGEST_LENGTH; };
 
     private:
         SHA_CTX mC;

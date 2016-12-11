@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 2011-2017 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,60 +17,51 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "DatabaseEnv.h"
+#include "Field.h"
 
-Field::Field() :
-mValue(NULL), mType(DB_TYPE_UNKNOWN)
+Field::Field()
 {
-}
-
-Field::Field(Field &f)
-{
-    const char* value;
-
-    value = f.GetString();
-
-    if (value)
-    {
-        mValue = new char[strlen(value) + 1];
-        if (mValue)
-            strcpy(mValue, value);
-    }
-    else
-        mValue = NULL;
-
-    mType = f.GetType();
-}
-
-Field::Field(const char* value, enum Field::DataTypes type) :
-mType(type)
-{
-    if (value)
-    {
-        mValue = new char[strlen(value) + 1];
-        if (mValue)
-            strcpy(mValue, value);
-    }
-    else
-        mValue = NULL;
+    data.value = NULL;
+    data.type = MYSQL_TYPE_NULL;
+    data.length = 0;
+    data.raw = false;
 }
 
 Field::~Field()
 {
-    if (mValue)
-        delete [] mValue;
+    CleanUp();
 }
 
-void Field::SetValue(const char* value)
+void Field::SetByteValue(const void* newValue, const size_t newSize, enum_field_types newType, uint32 length)
 {
-    if (mValue)
-        delete [] mValue;
+    if (data.value)
+        CleanUp();
 
-    if (value)
+    // This value stores raw bytes that have to be explicitly casted later
+    if (newValue)
     {
-        mValue = new char[strlen(value) + 1];
-        strcpy(mValue, value);
+        data.value = new char[newSize];
+        memcpy(data.value, newValue, newSize);
+        data.length = length;
     }
-    else
-        mValue = NULL;
+    data.type = newType;
+    data.raw = true;
+}
+
+void Field::SetStructuredValue(char* newValue, enum_field_types newType)
+{
+    if (data.value)
+        CleanUp();
+
+    // This value stores somewhat structured data that needs function style casting
+    if (newValue)
+    {
+        size_t size = strlen(newValue);
+        data.value = new char [size+1];
+        strcpy((char*)data.value, newValue);
+        data.length = size;
+    }
+
+    data.type = newType;
+    data.raw = false;
 }

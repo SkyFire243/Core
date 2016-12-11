@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -19,11 +18,13 @@
  */
 
 #include "SHA1.h"
+#include "BigNumber.h"
 #include <stdarg.h>
 
 SHA1Hash::SHA1Hash()
 {
     SHA1_Init(&mC);
+    memset(mDigest, 0, SHA_DIGEST_LENGTH * sizeof(uint8));
 }
 
 SHA1Hash::~SHA1Hash()
@@ -41,17 +42,17 @@ void SHA1Hash::UpdateData(const std::string &str)
     UpdateData((uint8 const*)str.c_str(), str.length());
 }
 
-void SHA1Hash::UpdateBigNumbers(BigNumber *bn0, ...)
+void SHA1Hash::UpdateBigNumbers(BigNumber* bn0, ...)
 {
     va_list v;
-    BigNumber *bn;
+    BigNumber* bn;
 
     va_start(v, bn0);
     bn = bn0;
     while (bn)
     {
-        UpdateData(bn->AsByteArray(), bn->GetNumBytes());
-        bn = va_arg(v, BigNumber *);
+        UpdateData(bn->AsByteArray().get(), bn->GetNumBytes());
+        bn = va_arg(v, BigNumber*);
     }
     va_end(v);
 }

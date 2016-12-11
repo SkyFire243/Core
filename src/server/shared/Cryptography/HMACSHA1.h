@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -21,7 +20,8 @@
 #ifndef _AUTH_HMAC_H
 #define _AUTH_HMAC_H
 
-#include "Common.h"
+#include "Define.h"
+#include <string>
 #include <openssl/hmac.h>
 #include <openssl/sha.h>
 
@@ -32,19 +32,16 @@ class BigNumber;
 class HmacHash
 {
     public:
-        HmacHash();
+        HmacHash(uint32 len, uint8 *seed);
         ~HmacHash();
-        HmacHash(uint32 len, uint8 *seed);        
-        void UpdateBigNumber(BigNumber *bn);
-        void UpdateData(const uint8 *data, int length);
-        void UpdateData(const std::string &str);       
-        void Initialize();
+        void UpdateData(const std::string &str);
+        void UpdateData(const uint8* data, size_t len);
         void Finalize();
-        uint8 *GetDigest() { return m_digest; };
-        int GetLength() { return SHA_DIGEST_LENGTH; };
+        uint8 *ComputeHash(BigNumber* bn);
+        uint8 *GetDigest() { return (uint8*)m_digest; }
+        int GetLength() const { return SHA_DIGEST_LENGTH; }
     private:
         HMAC_CTX m_ctx;
-        uint8 m_key[SEED_KEY_SIZE];
         uint8 m_digest[SHA_DIGEST_LENGTH];
 };
 #endif

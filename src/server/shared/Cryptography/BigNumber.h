@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -21,8 +20,8 @@
 #ifndef _AUTH_BIGNUMBER_H
 #define _AUTH_BIGNUMBER_H
 
-#include "Common.h"
-#include "ByteBuffer.h"
+#include "Define.h"
+#include <ace/Auto_Ptr.h>
 
 struct bignum_st;
 
@@ -30,45 +29,49 @@ class BigNumber
 {
     public:
         BigNumber();
-        BigNumber(const BigNumber &bn);
+        BigNumber(BigNumber const& bn);
         BigNumber(uint32);
         ~BigNumber();
 
         void SetDword(uint32);
         void SetQword(uint64);
-        void SetBinary(const uint8 *bytes, int len);
-        void SetHexStr(const char *str);
+        void SetBinary(uint8 const* bytes, int32 len);
+        void SetHexStr(char const* str);
 
-        void SetRand(int numbits);
+        void SetRand(int32 numbits);
 
-        BigNumber operator=(const BigNumber &bn);
+        BigNumber& operator=(BigNumber const& bn);
 
-        BigNumber operator+=(const BigNumber &bn);
-        BigNumber operator+(const BigNumber &bn)
+        BigNumber operator+=(BigNumber const& bn);
+        BigNumber operator+(BigNumber const& bn)
         {
             BigNumber t(*this);
             return t += bn;
         }
-        BigNumber operator-=(const BigNumber &bn);
-        BigNumber operator-(const BigNumber &bn)
+
+        BigNumber operator-=(BigNumber const& bn);
+        BigNumber operator-(BigNumber const& bn)
         {
             BigNumber t(*this);
             return t -= bn;
         }
-        BigNumber operator*=(const BigNumber &bn);
-        BigNumber operator*(const BigNumber &bn)
+
+        BigNumber operator*=(BigNumber const& bn);
+        BigNumber operator*(BigNumber const& bn)
         {
             BigNumber t(*this);
             return t *= bn;
         }
-        BigNumber operator/=(const BigNumber &bn);
-        BigNumber operator/(const BigNumber &bn)
+
+        BigNumber operator/=(BigNumber const& bn);
+        BigNumber operator/(BigNumber const& bn)
         {
             BigNumber t(*this);
             return t /= bn;
         }
-        BigNumber operator%=(const BigNumber &bn);
-        BigNumber operator%(const BigNumber &bn)
+
+        BigNumber operator%=(BigNumber const& bn);
+        BigNumber operator%(BigNumber const& bn)
         {
             BigNumber t(*this);
             return t %= bn;
@@ -76,24 +79,23 @@ class BigNumber
 
         bool isZero() const;
 
-        BigNumber ModExp(const BigNumber &bn1, const BigNumber &bn2);
-        BigNumber Exp(const BigNumber &);
+        BigNumber ModExp(BigNumber const& bn1, BigNumber const& bn2);
+        BigNumber Exp(BigNumber const&);
 
-        int GetNumBytes(void);
+        int32 GetNumBytes(void);
 
         struct bignum_st *BN() { return _bn; }
 
         uint32 AsDword();
-        uint8* AsByteArray(int minSize = 0, bool reverse = true);
-        ByteBuffer AsByteBuffer();
-        std::vector<uint8> AsByteVector();
 
-        const char *AsHexStr();
-        const char *AsDecStr();
+        ACE_Auto_Array_Ptr<uint8> AsByteArray(int32 minSize = 0, bool littleEndian = true);
+
+        char * AsHexStr() const;
+        char * AsDecStr() const;
 
     private:
         struct bignum_st *_bn;
-        uint8 *_array;
+
 };
 #endif
 

@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -26,7 +25,7 @@
 class SHA1Randx
 {
 public:
-    SHA1Randx(uint8 *buff, uint32 size)
+    SHA1Randx(uint8* buff, uint32 size)
     {
         uint32 taken = size/2;
 
@@ -37,31 +36,30 @@ public:
         memcpy(o1, sh.GetDigest(), 20);
 
         sh.Initialize();
-        sh.UpdateData(buff+taken, size-taken);
+        sh.UpdateData(buff + taken, size - taken);
         sh.Finalize();
 
         memcpy(o2, sh.GetDigest(), 20);
 
-        memset(o0,0x00,20);
+        memset(o0, 0x00, 20);
 
-        fillUp();
+        FillUp();
     }
 
-    void generate(uint8 *buf, uint32 sz)
+    void Generate(uint8* buf, uint32 sz)
     {
-        for (uint32 i = 0; i < sz; i++)
+        for (uint32 i = 0; i < sz; ++i)
         {
             if (taken == 20)
-            {
-                fillUp();
-            }
+                FillUp();
 
             buf[i] = o0[taken];
             taken++;
         }
     }
+
 private:
-    void fillUp()
+    void FillUp()
     {
         sh.Initialize();
         sh.UpdateData(o1, 20);
@@ -73,6 +71,7 @@ private:
 
         taken = 0;
     }
+
     SHA1Hash sh;
     uint32 taken;
     uint8 o0[20], o1[20], o2[20];

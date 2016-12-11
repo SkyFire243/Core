@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -20,54 +19,39 @@
 
 #include "HMACSHA1.h"
 #include "BigNumber.h"
+#include "Common.h"
 
-HmacHash::HmacHash()
-{
-    uint8 temp[SEED_KEY_SIZE] = { 0x38, 0xA7, 0x83, 0x15, 0xF8, 0x92, 0x25, 0x30, 0x71, 0x98, 0x67, 0xB1, 0x8C, 0x4, 0xE2, 0xAA };
-    memcpy(&m_key, &temp, SEED_KEY_SIZE);
-    HMAC_CTX_init(&m_ctx);
-    HMAC_Init_ex(&m_ctx, &m_key, SEED_KEY_SIZE, EVP_sha1(), NULL);
-}
- 
 HmacHash::HmacHash(uint32 len, uint8 *seed)
 {
-    ASSERT(len == SEED_KEY_SIZE);
-
-    memcpy(&m_key, seed, len);
     HMAC_CTX_init(&m_ctx);
-    HMAC_Init_ex(&m_ctx, &m_key, SEED_KEY_SIZE, EVP_sha1(), NULL);
+    HMAC_Init_ex(&m_ctx, seed, len, EVP_sha1(), NULL);
 }
 
 HmacHash::~HmacHash()
 {
-    memset(&m_key, 0x00, SEED_KEY_SIZE);
     HMAC_CTX_cleanup(&m_ctx);
-}
-
-void HmacHash::UpdateBigNumber(BigNumber *bn)
-{
-    UpdateData(bn->AsByteArray(), bn->GetNumBytes());
-}
-
-void HmacHash::UpdateData(const uint8 *data, int length)
-{
-    HMAC_Update(&m_ctx, data, length);
 }
 
 void HmacHash::UpdateData(const std::string &str)
 {
-    UpdateData((uint8 const*)str.c_str(), str.length());
+    HMAC_Update(&m_ctx, (uint8 const*)str.c_str(), str.length());
 }
 
-void HmacHash::Initialize()
+void HmacHash::UpdateData(const uint8* data, size_t len)
 {
-    HMAC_Init_ex(&m_ctx, &m_key, SEED_KEY_SIZE, EVP_sha1(), NULL);
+    HMAC_Update(&m_ctx, data, len);
 }
 
 void HmacHash::Finalize()
 {
     uint32 length = 0;
-    HMAC_Final(&m_ctx, m_digest, &length);
+    HMAC_Final(&m_ctx, (uint8*)m_digest, &length);
     ASSERT(length == SHA_DIGEST_LENGTH);
 }
 
+uint8 *HmacHash::ComputeHash(BigNumber* bn)
+{
+    HMAC_Update(&m_ctx, bn->AsByteArray().get(), bn->GetNumBytes());
+    Finalize();
+    return (uint8*)m_digest;
+}

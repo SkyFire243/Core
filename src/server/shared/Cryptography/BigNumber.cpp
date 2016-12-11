@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -18,33 +17,31 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "BigNumber.h"
+#include <ace/Guard_T.h>
+
+#include "Cryptography/BigNumber.h"
 #include <openssl/bn.h>
+#include <openssl/crypto.h>
 #include <algorithm>
+#include <ace/Auto_Ptr.h>
 
 BigNumber::BigNumber()
-{
-    _bn = BN_new();
-    _array = NULL;
-}
+    : _bn(BN_new())
+{ }
 
-BigNumber::BigNumber(const BigNumber &bn)
-{
-    _bn = BN_dup(bn._bn);
-    _array = NULL;
-}
+BigNumber::BigNumber(BigNumber const& bn)
+    : _bn(BN_dup(bn._bn))
+{ }
 
 BigNumber::BigNumber(uint32 val)
+    : _bn(BN_new())
 {
-    _bn = BN_new();
     BN_set_word(_bn, val);
-    _array = NULL;
 }
 
 BigNumber::~BigNumber()
 {
     BN_free(_bn);
-    if (_array) delete[] _array;
 }
 
 void BigNumber::SetDword(uint32 val)
@@ -54,47 +51,55 @@ void BigNumber::SetDword(uint32 val)
 
 void BigNumber::SetQword(uint64 val)
 {
-    BN_add_word(_bn, (uint32)(val >> 32));
+    BN_set_word(_bn, (uint32)(val >> 32));
     BN_lshift(_bn, _bn, 32);
     BN_add_word(_bn, (uint32)(val & 0xFFFFFFFF));
 }
 
-void BigNumber::SetBinary(const uint8 *bytes, int len)
+void BigNumber::SetBinary(uint8 const* bytes, int32 len)
 {
-    uint8 t[1000];
-    for (int i = 0; i < len; i++) t[i] = bytes[len - 1 - i];
-    BN_bin2bn(t, len, _bn);
+    uint8* array = new uint8[len];
+
+    for (int i = 0; i < len; i++)
+        array[i] = bytes[len - 1 - i];
+
+    BN_bin2bn(array, len, _bn);
+
+    delete[] array;
 }
 
-void BigNumber::SetHexStr(const char *str)
+void BigNumber::SetHexStr(char const* str)
 {
     BN_hex2bn(&_bn, str);
 }
 
-void BigNumber::SetRand(int numbits)
+void BigNumber::SetRand(int32 numbits)
 {
     BN_rand(_bn, numbits, 0, 1);
 }
 
-BigNumber BigNumber::operator=(const BigNumber &bn)
+BigNumber& BigNumber::operator=(BigNumber const& bn)
 {
+    if (this == &bn)
+        return *this;
+
     BN_copy(_bn, bn._bn);
     return *this;
 }
 
-BigNumber BigNumber::operator+=(const BigNumber &bn)
+BigNumber BigNumber::operator+=(BigNumber const& bn)
 {
     BN_add(_bn, _bn, bn._bn);
     return *this;
 }
 
-BigNumber BigNumber::operator-=(const BigNumber &bn)
+BigNumber BigNumber::operator-=(BigNumber const& bn)
 {
     BN_sub(_bn, _bn, bn._bn);
     return *this;
 }
 
-BigNumber BigNumber::operator*=(const BigNumber &bn)
+BigNumber BigNumber::operator*=(BigNumber const& bn)
 {
     BN_CTX *bnctx;
 
@@ -105,7 +110,7 @@ BigNumber BigNumber::operator*=(const BigNumber &bn)
     return *this;
 }
 
-BigNumber BigNumber::operator/=(const BigNumber &bn)
+BigNumber BigNumber::operator/=(BigNumber const& bn)
 {
     BN_CTX *bnctx;
 
@@ -116,7 +121,7 @@ BigNumber BigNumber::operator/=(const BigNumber &bn)
     return *this;
 }
 
-BigNumber BigNumber::operator%=(const BigNumber &bn)
+BigNumber BigNumber::operator%=(BigNumber const& bn)
 {
     BN_CTX *bnctx;
 
@@ -127,7 +132,7 @@ BigNumber BigNumber::operator%=(const BigNumber &bn)
     return *this;
 }
 
-BigNumber BigNumber::Exp(const BigNumber &bn)
+BigNumber BigNumber::Exp(BigNumber const& bn)
 {
     BigNumber ret;
     BN_CTX *bnctx;
@@ -139,7 +144,7 @@ BigNumber BigNumber::Exp(const BigNumber &bn)
     return ret;
 }
 
-BigNumber BigNumber::ModExp(const BigNumber &bn1, const BigNumber &bn2)
+BigNumber BigNumber::ModExp(BigNumber const& bn1, BigNumber const& bn2)
 {
     BigNumber ret;
     BN_CTX *bnctx;
@@ -151,7 +156,7 @@ BigNumber BigNumber::ModExp(const BigNumber &bn1, const BigNumber &bn2)
     return ret;
 }
 
-int BigNumber::GetNumBytes(void)
+int32 BigNumber::GetNumBytes(void)
 {
     return BN_num_bytes(_bn);
 }
@@ -163,53 +168,35 @@ uint32 BigNumber::AsDword()
 
 bool BigNumber::isZero() const
 {
-    return BN_is_zero(_bn)!=0;
+    return BN_is_zero(_bn);
 }
 
-uint8 *BigNumber::AsByteArray(int minSize, bool reverse)
+ACE_Auto_Array_Ptr<uint8> BigNumber::AsByteArray(int32 minSize, bool littleEndian)
 {
     int length = (minSize >= GetNumBytes()) ? minSize : GetNumBytes();
 
-    if (_array)
-    {
-        delete[] _array;
-        _array = NULL;
-    }
-    _array = new uint8[length];
+    uint8* array = new uint8[length];
 
     // If we need more bytes than length of BigNumber set the rest to 0
     if (length > GetNumBytes())
-        memset((void*)_array, 0, length);
+        memset((void*)array, 0, length);
 
-    BN_bn2bin(_bn, (unsigned char *)_array);
-    
-    if (reverse)
-    std::reverse(_array, _array + length);
+    BN_bn2bin(_bn, (unsigned char *)array);
 
-    return _array;
-}
+    // openssl's BN stores data internally in big endian format, reverse if little endian desired
+    if (littleEndian)
+        std::reverse(array, array + length);
 
-ByteBuffer BigNumber::AsByteBuffer()
-{
-    ByteBuffer ret(GetNumBytes());
-    ret.append(AsByteArray(), GetNumBytes());
+    ACE_Auto_Array_Ptr<uint8> ret(array);
     return ret;
 }
 
-std::vector<uint8> BigNumber::AsByteVector()
-{
-    std::vector<uint8> ret;
-    ret.resize(GetNumBytes());
-    memcpy(&ret[0], AsByteArray(), GetNumBytes());
-    return ret;
-}
-
-const char *BigNumber::AsHexStr()
+char * BigNumber::AsHexStr() const
 {
     return BN_bn2hex(_bn);
 }
 
-const char *BigNumber::AsDecStr()
+char * BigNumber::AsDecStr() const
 {
     return BN_bn2dec(_bn);
 }

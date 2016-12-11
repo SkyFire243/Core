@@ -18,22 +18,22 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AUTH_ARC4_H
-#define _AUTH_ARC4_H
+#ifndef _AUTH_SARC4_H
+#define _AUTH_SARC4_H
 
 #include "Define.h"
 #include <openssl/evp.h>
 
 class ARC4
 {
-public:
-    ARC4(uint8 len);
-    ARC4(uint8 *seed, uint8 len);
-    ~ARC4();
-    void Init(uint8 *seed);
-    void UpdateData(int len, uint8 *data);
-private:
-    EVP_CIPHER_CTX m_ctx;
+    public:
+        ARC4(uint8 len);
+        ARC4(uint8 *seed, uint8 len);
+        ~ARC4();
+        void Init(uint8 *seed);
+        void UpdateData(int len, uint8 *data);
+    private:
+        EVP_CIPHER_CTX m_ctx;
 };
 
 #endif
