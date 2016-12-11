@@ -1,0 +1,17 @@
+#! /bin/bash
+while true
+do
+  PID1=$(pidof skyfire-core)
+  if (( PID1 < 1 ))
+  then
+        /etc/init.d/skyfire start-core
+  fi
+ 
+  PID2=$(pidof skyfire-realm)
+  if (( PID2 < 1 ))
+  then
+        /etc/init.d/skyfire start-realm
+  fi
+ 
+  sleep 10
+done
