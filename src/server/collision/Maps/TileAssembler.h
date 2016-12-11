@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -24,21 +23,25 @@
 #include <G3D/Vector3.h>
 #include <G3D/Matrix3.h>
 #include <map>
+#include <set>
 
 #include "ModelInstance.h"
+#include "WorldModel.h"
 
 namespace VMAP
 {
-    /*
+    /**
     This Class is used to convert raw vector data into balanced BSP-Trees.
     To start the conversion call convertWorld().
     */
+    //===============================================
 
     class ModelPosition
     {
         private:
             G3D::Matrix3 iRotation;
         public:
+            ModelPosition(): iScale(0.0f) { }
             G3D::Vector3 iPos;
             G3D::Vector3 iDir;
             float iScale;
@@ -60,6 +63,33 @@ namespace VMAP
     };
 
     typedef std::map<uint32, MapSpawns*> MapData;
+    //===============================================
+
+    struct GroupModel_Raw
+    {
+        uint32 mogpflags;
+        uint32 GroupWMOID;
+
+        G3D::AABox bounds;
+        uint32 liquidflags;
+        std::vector<MeshTriangle> triangles;
+        std::vector<G3D::Vector3> vertexArray;
+        class WmoLiquid* liquid;
+
+        GroupModel_Raw() : mogpflags(0), GroupWMOID(0), liquidflags(0),
+            liquid(NULL) { }
+        ~GroupModel_Raw();
+
+        bool Read(FILE* f);
+    };
+
+    struct WorldModel_Raw
+    {
+        uint32 RootWMOID;
+        std::vector<GroupModel_Raw> groupsArray;
+
+        bool Read(const char * path);
+    };
 
     class TileAssembler
     {
@@ -70,6 +100,7 @@ namespace VMAP
             G3D::Table<std::string, unsigned int > iUniqueNameIds;
             unsigned int iCurrentUniqueNameId;
             MapData mapData;
+            std::set<std::string> spawnedModelFiles;
 
         public:
             TileAssembler(const std::string& pSrcDirName, const std::string& pDestDirName);
@@ -78,12 +109,12 @@ namespace VMAP
             bool convertWorld2();
             bool readMapSpawns();
             bool calculateTransformedBound(ModelSpawn &spawn);
+            void exportGameobjectModels();
 
             bool convertRawFile(const std::string& pModelFilename);
             void setModelNameFilterMethod(bool (*pFilterMethod)(char *pName)) { iFilterMethod = pFilterMethod; }
             std::string getDirEntryNameFromModName(unsigned int pMapId, const std::string& pModPosName);
-            unsigned int getUniqueNameId(const std::string pName);
     };
+
 }                                                           // VMAP
 #endif                                                      /*_TILEASSEMBLER_H_*/
-

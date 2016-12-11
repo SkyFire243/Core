@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -58,15 +57,15 @@ namespace VMAP
             // temp?
             const G3D::AABox& getBounds() const { return iBound; }
 
-            static bool readFromFile(FILE *rf, ModelSpawn &spawn);
-            static bool writeToFile(FILE *rw, const ModelSpawn &spawn);
+            static bool readFromFile(FILE* rf, ModelSpawn &spawn);
+            static bool writeToFile(FILE* rw, const ModelSpawn &spawn);
     };
 
     class ModelInstance: public ModelSpawn
     {
         public:
-            ModelInstance(): iModel(0) {}
-            ModelInstance(const ModelSpawn &spawn, WorldModel *model);
+            ModelInstance(): iInvScale(0.0f), iModel(0) { }
+            ModelInstance(const ModelSpawn &spawn, WorldModel* model);
             void setUnloaded() { iModel = 0; }
             bool intersectRay(const G3D::Ray& pRay, float& pMaxDist, bool pStopAtFirstHit) const;
             void intersectPoint(const G3D::Vector3& p, AreaInfo &info) const;
@@ -75,9 +74,10 @@ namespace VMAP
         protected:
             G3D::Matrix3 iInvRot;
             float iInvScale;
-            WorldModel *iModel;
+            WorldModel* iModel;
+        public:
+            WorldModel* getWorldModel();
     };
 } // namespace VMAP
 
 #endif // _MODELINSTANCE
-

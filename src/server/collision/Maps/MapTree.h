@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -22,7 +21,7 @@
 #define _MAPTREE_H
 
 #include "Define.h"
-#include "UnorderedMap.h"
+#include "Dynamic/UnorderedMap.h"
 #include "BoundingIntervalHierarchy.h"
 
 namespace VMAP
@@ -33,9 +32,9 @@ namespace VMAP
 
     struct LocationInfo
     {
-        LocationInfo(): hitInstance(0), hitModel(0), ground_Z(-G3D::inf()) {};
-        const ModelInstance *hitInstance;
-        const GroupModel *hitModel;
+        LocationInfo(): hitInstance(0), hitModel(0), ground_Z(-G3D::inf()) { }
+        const ModelInstance* hitInstance;
+        const GroupModel* hitModel;
         float ground_Z;
     };
 
@@ -47,7 +46,7 @@ namespace VMAP
             uint32 iMapID;
             bool iIsTiled;
             BIH iTree;
-            ModelInstance *iTreeValues; // the tree entries
+            ModelInstance* iTreeValues; // the tree entries
             uint32 iNTreeValues;
 
             // Store all the map tile idents that are loaded for that map
@@ -74,19 +73,21 @@ namespace VMAP
             bool getObjectHitPos(const G3D::Vector3& pos1, const G3D::Vector3& pos2, G3D::Vector3& pResultHitPos, float pModifyDist) const;
             float getHeight(const G3D::Vector3& pPos, float maxSearchDist) const;
             bool getAreaInfo(G3D::Vector3 &pos, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const;
-            bool GetLocationInfo(const Vector3 &pos, LocationInfo &info) const;
+            bool GetLocationInfo(const G3D::Vector3 &pos, LocationInfo &info) const;
 
-            bool InitMap(const std::string &fname, VMapManager2 *vm);
-            void UnloadMap(VMapManager2 *vm);
-            bool LoadMapTile(uint32 tileX, uint32 tileY, VMapManager2 *vm);
-            void UnloadMapTile(uint32 tileX, uint32 tileY, VMapManager2 *vm);
+            bool InitMap(const std::string &fname, VMapManager2* vm);
+            void UnloadMap(VMapManager2* vm);
+            bool LoadMapTile(uint32 tileX, uint32 tileY, VMapManager2* vm);
+            void UnloadMapTile(uint32 tileX, uint32 tileY, VMapManager2* vm);
             bool isTiled() const { return iIsTiled; }
             uint32 numLoadedTiles() const { return iLoadedTiles.size(); }
+            void getModelInstances(ModelInstance* &models, uint32 &count);
     };
 
     struct AreaInfo
     {
-        AreaInfo(): result(false), ground_Z(-G3D::inf()) {};
+        AreaInfo(): result(false), ground_Z(-G3D::inf()), flags(0), adtId(0),
+            rootId(0), groupId(0) { }
         bool result;
         float ground_Z;
         uint32 flags;
@@ -97,4 +98,3 @@ namespace VMAP
 }                                                           // VMAP
 
 #endif // _MAPTREE_H
-
