@@ -24,7 +24,13 @@ For further information on the SkyFire project, please visit our project website
 **TBC 2.4.3 Build 8606**
 
 ## Build Status
-# [![Build Status](https://travis-ci.org/SkyFire243/Core.svg?branch=master)](https://travis-ci.org/SkyFire243/Core)
+
+Linux   |   Windows
+:--------------: | :--------------:
+[![Build Status](https://travis-ci.org/SkyFire243/Core.svg?branch=master)](https://travis-ci.org/SkyFire243/Core)
+|
+[![Build status](https://ci.appveyor.com/api/projects/status/usr9ja92wyp58kr9/branch/master?svg=true)](https://ci.appveyor.com/project/Shoxxo/core/branch/master)
+
 
 ## Requirements
 + Platform: Linux, Windows
