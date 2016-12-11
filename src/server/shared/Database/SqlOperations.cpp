@@ -25,53 +25,15 @@
 
 // ASYNC STATEMENTS / TRANSACTIONS
 
-void SqlStatement::Execute(Database *db)
+void SqlStatement::Execute(Database* db)
 {
     // just do it
     db->DirectExecute(m_sql);
 }
 
-void SqlTransaction::Execute(Database *db)
-{
-    const char* sql;
-
-    m_Mutex.acquire();
-    if (m_queue.empty())
-    {
-        m_Mutex.release();
-        return;
-    }
-
-    db->DirectExecute("START TRANSACTION");
-    while (!m_queue.empty())
-    {
-        sql = m_queue.front();
-
-        if (!db->DirectExecute(sql))
-        {
-            free((void*)const_cast<char*>(sql));
-            m_queue.pop();
-            db->DirectExecute("ROLLBACK");
-            while (!m_queue.empty())
-            {
-                free((void*)const_cast<char*>(m_queue.front()));
-                m_queue.pop();
-            }
-            m_Mutex.release();
-            return;
-        }
-
-        free((void*)const_cast<char*>(sql));
-        m_queue.pop();
-    }
-
-    db->DirectExecute("COMMIT");
-    m_Mutex.release();
-}
-
 // ASYNC QUERIES
 
-void SqlQuery::Execute(Database *db)
+void SqlQuery::Execute(Database* db)
 {
     if (!m_callback || !m_queue)
         return;
@@ -85,7 +47,7 @@ void SqlQuery::Execute(Database *db)
 void SqlResultQueue::Update()
 {
     // execute the callbacks waiting in the synchronization queue
-    Skyfire::IQueryCallback* callback;
+    Oregon::IQueryCallback* callback;
     while (next(callback))
     {
         callback->Execute();
@@ -93,30 +55,30 @@ void SqlResultQueue::Update()
     }
 }
 
-bool SqlQueryHolder::Execute(Skyfire::IQueryCallback * callback, SqlDelayThread *thread, SqlResultQueue *queue)
+bool SqlQueryHolder::Execute(Oregon::IQueryCallback* callback, SqlDelayThread* thread, SqlResultQueue* queue)
 {
     if (!callback || !thread || !queue)
         return false;
 
     // delay the execution of the queries, sync them with the delay thread
     // which will in turn resync on execution (via the queue) and call back
-    SqlQueryHolderEx *holderEx = new SqlQueryHolderEx(this, callback, queue);
+    SqlQueryHolderEx* holderEx = new SqlQueryHolderEx(this, callback, queue);
     thread->Delay(holderEx);
     return true;
 }
 
-bool SqlQueryHolder::SetQuery(size_t index, const char *sql)
+bool SqlQueryHolder::SetQuery(size_t index, const char* sql)
 {
     if (m_queries.size() <= index)
     {
-        sLog->outError("Query index (%u) out of range (size: %u) for query: %s",index,(uint32)m_queries.size(),sql);
+        sLog.outError("Query index (%lu) out of range (size: %u) for query: %s", index, (uint32)m_queries.size(), sql);
         return false;
     }
 
     if (m_queries[index].first != NULL)
     {
-        sLog->outError("Attempt assign query to holder index (%u) where other query stored (Old: [%s] New: [%s])",
-            index, m_queries[index].first, sql);
+        sLog.outError("Attempt assign query to holder index (%lu) where other query stored (Old: [%s] New: [%s])",
+                      index, m_queries[index].first, sql);
         return false;
     }
 
@@ -125,11 +87,11 @@ bool SqlQueryHolder::SetQuery(size_t index, const char *sql)
     return true;
 }
 
-bool SqlQueryHolder::SetPQuery(size_t index, const char *format, ...)
+bool SqlQueryHolder::SetPQuery(size_t index, const char* format, ...)
 {
     if (!format)
     {
-        sLog->outError("Query (index: %u) is empty.",index);
+        sLog.outError("Query (index: %lu) is empty.", index);
         return false;
     }
 
@@ -139,9 +101,9 @@ bool SqlQueryHolder::SetPQuery(size_t index, const char *format, ...)
     int res = vsnprintf(szQuery, MAX_QUERY_LEN, format, ap);
     va_end(ap);
 
-    if (res==-1)
+    if (res == -1)
     {
-        sLog->outError("SQL Query truncated (and not execute) for format: %s",format);
+        sLog.outError("SQL Query truncated (and not execute) for format: %s", format);
         return false;
     }
 
@@ -189,22 +151,21 @@ void SqlQueryHolder::SetSize(size_t size)
     m_queries.resize(size);
 }
 
-void SqlQueryHolderEx::Execute(Database *db)
+void SqlQueryHolderEx::Execute(Database* db)
 {
     if (!m_holder || !m_callback || !m_queue)
         return;
 
     // we can do this, we are friends
-    std::vector<SqlQueryHolder::SqlResultPair> &queries = m_holder->m_queries;
+    std::vector<SqlQueryHolder::SqlResultPair>& queries = m_holder->m_queries;
 
     for (size_t i = 0; i < queries.size(); i++)
     {
         // execute all queries in the holder and pass the results
-        char const *sql = queries[i].first;
+        char const* sql = queries[i].first;
         if (sql) m_holder->SetResult(i, db->Query(sql));
     }
 
     // sync with the caller thread
     m_queue->add(m_callback);
 }
-
