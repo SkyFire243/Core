@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/ProjectSkyfire/SkyFire.548.png?label=ready&title=Ready)](https://waffle.io/ProjectSkyfire/SkyFire.548)
+[![Stories in Ready](https://badge.waffle.io/SkyFire243/Core.png?label=ready&title=Ready)](https://waffle.io/SkyFire243/Core)
 # ![logo](http://www.projectskyfire.org/public/style_images/15_14_skyfire_logo.png)
 
 ## Project Information
@@ -23,14 +23,11 @@ For further information on the SkyFire project, please visit our project website
 ## Supported Client Version
 **TBC 2.4.3 Build 8606**
 
-## Client Patch
-[SkyFire-Community-Tools](https://github.com/ProjectSkyfire/SkyFire-Community-Tools).
-
 ## Build Status
 # [![Build Status](https://travis-ci.org/SkyFire243/Core.svg?branch=master)](https://travis-ci.org/SkyFire243/Core)
 
 ## Requirements
-+ Platform: Linux, Windows or Mac
++ Platform: Linux, Windows
 + Processor with SSE2 support
 + ACE = 5.8.3 (included for Windows)
 + MySQL = 5.1.0 (included for Windows)
@@ -44,17 +41,15 @@ Detailed installation guides are available in the wiki for
 
 [Windows](http://wiki.projectskyfire.org/index.php?title=Installation_Windows),
 [Linux](http://wiki.projectskyfire.org/index.php?title=Installation_Linux) and
-[Mac OSX](http://wiki.projectskyfire.org/index.php?title=Installation_Mac_OS_X).
-
 
 ## Reporting issues
 Please use the search function before you report issues.
-[SkyFire Issue Tracker](https://github.com/ProjectSkyfire/SkyFire.548/issues).
+[SkyFire Issue Tracker](https://github.com/SkyFire243/Core/issues)
 
 ## Submitting fixes
 Fixes are submitted as pull requests via Github.
 
-[SkyFire Pull Request](https://github.com/ProjectSkyfire/SkyFire.548/pulls)
+[SkyFire Pull Request](https://github.com/SkyFire243/Core/pulls)
 
 ## Copyright
 License: GPL 3.0
@@ -68,8 +63,8 @@ Read file [THANKS](THANKS.md)
 Read File [TO-DO](TODO.md)
 
 ## Links
-Forum [http://www.projectskyfire.org](http://www.projectskyfire.org)
+Forum [https://www.projectskyfire.org](https://www.projectskyfire.org)
 
-Database [http://www.projectskyfire.org/index.php?/files/](http://www.projectskyfire.org/index.php?/files/)
+Database [https://www.projectskyfire.org/index.php?/files/](https://www.projectskyfire.org/index.php?/files/)
 
 Wiki [http://wiki.projectskyfire.org](http://wiki.projectskyfire.org)
