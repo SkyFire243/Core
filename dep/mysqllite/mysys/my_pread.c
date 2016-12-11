@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (C) 2000 MySQL AB, 2008-2009 Sun Microsystems, Inc
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 #include "mysys_priv.h"
 #include "mysys_err.h"
@@ -21,6 +21,8 @@
 #if defined (HAVE_PREAD) && !defined(_WIN32)
 #include <unistd.h>
 #endif
+
+
 
 /*
   Read a chunk of bytes from a file from a given position
@@ -69,12 +71,12 @@ size_t my_pread(File Filedes, uchar *Buffer, size_t Count, my_off_t offset,
 #else
 #if defined(_WIN32)
     readbytes= my_win_pread(Filedes, Buffer, Count, offset);
-#else
+#else 
     readbytes= pread(Filedes, Buffer, Count, offset);
 #endif
     error= (readbytes != Count);
 #endif
-    if (error)
+    if(error)
     {
       my_errno= errno ? errno : -1;
       if (errno == 0 || (readbytes != (size_t) -1 &&
@@ -108,6 +110,7 @@ size_t my_pread(File Filedes, uchar *Buffer, size_t Count, my_off_t offset,
     DBUG_RETURN(readbytes);                /* purecov: inspected */
   }
 } /* my_pread */
+
 
 /*
   Write a chunk of bytes to a file at a given position
@@ -158,7 +161,7 @@ size_t my_pwrite(File Filedes, const uchar *Buffer, size_t Count,
 #else
     writtenbytes= pwrite(Filedes, Buffer, Count, offset);
 #endif
-    if (writtenbytes == Count)
+    if(writtenbytes == Count)
       break;
     my_errno= errno;
     if (writtenbytes != (size_t) -1)

@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (C) 2000 MySQL AB, 2008-2009 Sun Microsystems, Inc
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 /*****************************************************************************
 ** Simulation of posix threads calls for Windows
@@ -62,6 +62,7 @@ static unsigned int __stdcall pthread_start(void *p)
   return 0;
 }
 
+
 int pthread_create(pthread_t *thread_id, const pthread_attr_t *attr,
                    pthread_handler func, void *param)
 {
@@ -93,6 +94,7 @@ error_return:
   DBUG_RETURN(-1);
 }
 
+
 void pthread_exit(void *a)
 {
   _endthreadex(0);
@@ -112,7 +114,7 @@ int pthread_join(pthread_t thread, void **value_ptr)
 
   ret= WaitForSingleObject(handle, INFINITE);
 
-  if (ret != WAIT_OBJECT_0)
+  if(ret != WAIT_OBJECT_0)
   {
     errno= EINVAL;
     goto error_return;
@@ -122,13 +124,14 @@ int pthread_join(pthread_t thread, void **value_ptr)
   return 0;
 
 error_return:
-  if (handle)
+  if(handle)
     CloseHandle(handle);
   return -1;
 }
 
 int pthread_cancel(pthread_t thread)
 {
+
   HANDLE handle= 0;
   BOOL ok= FALSE;
 
@@ -149,14 +152,14 @@ int pthread_cancel(pthread_t thread)
  One time initialization. For simplicity, we assume initializer thread
  does not exit within init_routine().
 */
-int my_pthread_once(my_pthread_once_t *once_control,
+int my_pthread_once(my_pthread_once_t *once_control, 
     void (*init_routine)(void))
 {
   LONG state;
 
   /*
     Do "dirty" read to find out if initialization is already done, to
-    save an interlocked operation in common case. Memory barriers are ensured by
+    save an interlocked operation in common case. Memory barriers are ensured by 
     Visual C++ volatile implementation.
   */
   if (*once_control == MY_PTHREAD_ONCE_DONE)
@@ -165,7 +168,7 @@ int my_pthread_once(my_pthread_once_t *once_control,
   state= InterlockedCompareExchange(once_control, MY_PTHREAD_ONCE_INPROGRESS,
                                         MY_PTHREAD_ONCE_INIT);
 
-  switch (state)
+  switch(state)
   {
   case MY_PTHREAD_ONCE_INIT:
     /* This is initializer thread */

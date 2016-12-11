@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, 2011, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (C) 2000 MySQL AB
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,6 +12,8 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
+
+#line 18 "decimal.c"
 
 /*
 =======================================================================
@@ -233,21 +235,22 @@ void max_decimal(int precision, int frac, decimal_t *to)
     int firstdigits= intpart % DIG_PER_DEC1;
     if (firstdigits)
       *buf++= powers10[firstdigits] - 1; /* get 9 99 999 ... */
-    for (intpart/= DIG_PER_DEC1; intpart; intpart--)
+    for(intpart/= DIG_PER_DEC1; intpart; intpart--)
       *buf++= DIG_MAX;
   }
 
   if ((to->frac= frac))
   {
     int lastdigits= frac % DIG_PER_DEC1;
-    for (frac/= DIG_PER_DEC1; frac; frac--)
+    for(frac/= DIG_PER_DEC1; frac; frac--)
       *buf++= DIG_MAX;
     if (lastdigits)
       *buf= frac_max[lastdigits - 1];
   }
 }
 
-static dec1 *remove_leading_zeroes(const decimal_t *from, int *intg_result)
+
+static dec1 *remove_leading_zeroes(decimal_t *from, int *intg_result)
 {
   int intg= from->intg, i;
   dec1 *buf0= from->buf;
@@ -268,6 +271,7 @@ static dec1 *remove_leading_zeroes(const decimal_t *from, int *intg_result)
   *intg_result= intg;
   return buf0;
 }
+
 
 /*
   Count actual length of fraction part (without ending zeroes)
@@ -301,6 +305,7 @@ int decimal_actual_fraction(decimal_t *from)
   return frac;
 }
 
+
 /*
   Convert decimal to its printable string representation
 
@@ -309,8 +314,8 @@ int decimal_actual_fraction(decimal_t *from)
       from            - value to convert
       to              - points to buffer where string representation
                         should be stored
-      *to_len         - in:  size of to buffer (incl. terminating '\0')
-                        out: length of the actually written string (excl. '\0')
+      *to_len         - in:  size of to buffer
+                        out: length of the actually written string
       fixed_precision - 0 if representation can be variable length and
                         fixed_decimals will not be checked in this case.
                         Put number as with fixed point position with this
@@ -323,11 +328,10 @@ int decimal_actual_fraction(decimal_t *from)
     E_DEC_OK/E_DEC_TRUNCATED/E_DEC_OVERFLOW
 */
 
-int decimal2string(const decimal_t *from, char *to, int *to_len,
+int decimal2string(decimal_t *from, char *to, int *to_len,
                    int fixed_precision, int fixed_decimals,
                    char filler)
 {
-  /* {intg_len, frac_len} output widths; {intg, frac} places in input */
   int len, intg, frac= from->frac, i, intg_len, frac_len, fill;
   /* number digits before decimal point */
   int fixed_intg= (fixed_precision ?
@@ -401,14 +405,14 @@ int decimal2string(const decimal_t *from, char *to, int *to_len,
         x*=10;
       }
     }
-    for (; fill; fill--)
+    for(; fill; fill--)
       *s1++=filler;
   }
 
   fill= intg_len - intg;
   if (intg == 0)
     fill--; /* symbol 0 before digital point */
-  for (; fill; fill--)
+  for(; fill; fill--)
     *s++=filler;
   if (intg)
   {
@@ -428,6 +432,7 @@ int decimal2string(const decimal_t *from, char *to, int *to_len,
     *s= '0';
   return error;
 }
+
 
 /*
   Return bounds of decimal digits in the number
@@ -493,6 +498,7 @@ static void digits_bounds(decimal_t *from, int *start_result, int *end_result)
   *end_result= stop; /* index of position after last decimal digit (from 0) */
 }
 
+
 /*
   Left shift for alignment of data in buffer
 
@@ -516,11 +522,12 @@ void do_mini_left_shift(decimal_t *dec, int shift, int beg, int last)
   DBUG_ASSERT(end < dec->buf + dec->len);
   if (beg % DIG_PER_DEC1 < shift)
     *(from - 1)= (*from) / powers10[c_shift];
-  for (; from < end; from++)
+  for(; from < end; from++)
     *from= ((*from % powers10[c_shift]) * powers10[shift] +
             (*(from + 1)) / powers10[c_shift]);
   *from= (*from % powers10[c_shift]) * powers10[shift];
 }
+
 
 /*
   Right shift for alignment of data in buffer
@@ -545,11 +552,12 @@ void do_mini_right_shift(decimal_t *dec, int shift, int beg, int last)
   DBUG_ASSERT(end >= dec->buf);
   if (DIG_PER_DEC1 - ((last - 1) % DIG_PER_DEC1 + 1) < shift)
     *(from + 1)= (*from % powers10[shift]) * powers10[c_shift];
-  for (; from > end; from--)
+  for(; from > end; from--)
     *from= (*from / powers10[shift] +
             (*(from - 1) % powers10[shift]) * powers10[c_shift]);
   *from= *from / powers10[shift];
 }
+
 
 /*
   Shift of decimal digits in given number (with rounding if it need)
@@ -699,9 +707,9 @@ int decimal_shift(decimal_t *dec, int shift)
       barier= dec->buf + (ROUND_UP(end) - 1 - d_shift);
       DBUG_ASSERT(to >= dec->buf);
       DBUG_ASSERT(barier + d_shift < dec->buf + dec->len);
-      for (; to <= barier; to++)
+      for(; to <= barier; to++)
         *to= *(to + d_shift);
-      for (barier+= d_shift; to <= barier; to++)
+      for(barier+= d_shift; to <= barier; to++)
         *to= 0;
       d_shift= -d_shift;
     }
@@ -713,9 +721,9 @@ int decimal_shift(decimal_t *dec, int shift)
       barier= dec->buf + ROUND_UP(beg + 1) - 1 + d_shift;
       DBUG_ASSERT(to < dec->buf + dec->len);
       DBUG_ASSERT(barier - d_shift >= dec->buf);
-      for (; to >= barier; to--)
+      for(; to >= barier; to--)
         *to= *(to - d_shift);
-      for (barier-= d_shift; to >= barier; to--)
+      for(barier-= d_shift; to >= barier; to--)
         *to= 0;
     }
     d_shift*= DIG_PER_DEC1;
@@ -732,7 +740,7 @@ int decimal_shift(decimal_t *dec, int shift)
   beg= ROUND_UP(beg + 1) - 1;
   end= ROUND_UP(end) - 1;
   DBUG_ASSERT(new_point >= 0);
-
+  
   /* We don't want negative new_point below */
   if (new_point != 0)
     new_point= ROUND_UP(new_point) - 1;
@@ -754,6 +762,7 @@ int decimal_shift(decimal_t *dec, int shift)
   return err;
 }
 
+
 /*
   Convert string to decimal
 
@@ -763,7 +772,7 @@ int decimal_shift(decimal_t *dec, int shift)
       to      - decimal where where the result will be stored
                 to->buf and to->len must be set.
       end     - Pointer to pointer to end of string. Will on return be
-        set to the char after the last used character
+		set to the char after the last used character
       fixed   - use to->intg, to->frac as limits for input number
 
   NOTE
@@ -922,6 +931,7 @@ fatal_error:
   return error;
 }
 
+
 /*
   Convert decimal to double
 
@@ -934,7 +944,7 @@ fatal_error:
     E_DEC_OK/E_DEC_OVERFLOW/E_DEC_TRUNCATED
 */
 
-int decimal2double(const decimal_t *from, double *to)
+int decimal2double(decimal_t *from, double *to)
 {
   char strbuf[FLOATING_POINT_BUFFER], *end;
   int len= sizeof(strbuf);
@@ -974,6 +984,7 @@ int double2decimal(double from, decimal_t *to)
   DBUG_PRINT("exit", ("res: %d", res));
   DBUG_RETURN(res);
 }
+
 
 static int ull2dec(ulonglong from, decimal_t *to)
 {
@@ -1140,6 +1151,7 @@ int decimal2longlong(decimal_t *from, longlong *to)
 
     now, middle decimal_digit_t is full - it stores 9 decimal digits. It goes
     into binary representation as is:
+
 
       ...........  0D-FB-38-D2 ............
 
@@ -1451,7 +1463,7 @@ int decimal_bin_size(int precision, int scale)
 */
 
 int
-decimal_round(const decimal_t *from, decimal_t *to, int scale,
+decimal_round(decimal_t *from, decimal_t *to, int scale,
               decimal_round_mode mode)
 {
   int frac0=scale>0 ? ROUND_UP(scale) : scale/DIG_PER_DEC1,
@@ -1685,7 +1697,7 @@ int decimal_result_size(decimal_t *from1, decimal_t *from2, char op, int param)
   return -1; /* shut up the warning */
 }
 
-static int do_add(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
+static int do_add(decimal_t *from1, decimal_t *from2, decimal_t *to)
 {
   int intg1=ROUND_UP(from1->intg), intg2=ROUND_UP(from2->intg),
       frac1=ROUND_UP(from1->frac), frac2=ROUND_UP(from2->frac),
@@ -1767,7 +1779,7 @@ static int do_add(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
 
 /* to=from1-from2.
    if to==0, return -1/0/+1 - the result of the comparison */
-static int do_sub(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
+static int do_sub(decimal_t *from1, decimal_t *from2, decimal_t *to)
 {
   int intg1=ROUND_UP(from1->intg), intg2=ROUND_UP(from2->intg),
       frac1=ROUND_UP(from1->frac), frac2=ROUND_UP(from2->frac);
@@ -1836,7 +1848,7 @@ static int do_sub(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
   /* ensure that always from1 > from2 (and intg1 >= intg2) */
   if (carry)
   {
-    swap_variables(const decimal_t *, from1, from2);
+    swap_variables(decimal_t *,from1,from1);
     swap_variables(dec1 *,start1, start2);
     swap_variables(int,intg1,intg2);
     swap_variables(int,frac1,frac2);
@@ -1902,35 +1914,35 @@ static int do_sub(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
   return error;
 }
 
-int decimal_intg(const decimal_t *from)
+int decimal_intg(decimal_t *from)
 {
   int res;
   remove_leading_zeroes(from, &res);
   return res;
 }
 
-int decimal_add(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
+int decimal_add(decimal_t *from1, decimal_t *from2, decimal_t *to)
 {
   if (likely(from1->sign == from2->sign))
     return do_add(from1, from2, to);
   return do_sub(from1, from2, to);
 }
 
-int decimal_sub(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
+int decimal_sub(decimal_t *from1, decimal_t *from2, decimal_t *to)
 {
   if (likely(from1->sign == from2->sign))
     return do_sub(from1, from2, to);
   return do_add(from1, from2, to);
 }
 
-int decimal_cmp(const decimal_t *from1, const decimal_t *from2)
+int decimal_cmp(decimal_t *from1, decimal_t *from2)
 {
   if (likely(from1->sign == from2->sign))
     return do_sub(from1, from2, 0);
   return from1->sign > from2->sign ? -1 : 1;
 }
 
-int decimal_is_zero(const decimal_t *from)
+int decimal_is_zero(decimal_t *from)
 {
   dec1 *buf1=from->buf,
        *end=buf1+ROUND_UP(from->intg)+ROUND_UP(from->frac);
@@ -1961,7 +1973,7 @@ int decimal_is_zero(const decimal_t *from)
     XXX if this library is to be used with huge numbers of thousands of
     digits, fast multiplication must be implemented.
 */
-int decimal_mul(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
+int decimal_mul(decimal_t *from1, decimal_t *from2, decimal_t *to)
 {
   int intg1=ROUND_UP(from1->intg), intg2=ROUND_UP(from2->intg),
       frac1=ROUND_UP(from1->frac), frac2=ROUND_UP(from2->frac),
@@ -2085,8 +2097,8 @@ int decimal_mul(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
   changed to malloc (or at least fallback to malloc if alloca() fails)
   but then, decimal_mul() should be rewritten too :(
 */
-static int do_div_mod(const decimal_t *from1, const decimal_t *from2,
-                      decimal_t *to, decimal_t *mod, int scale_incr)
+static int do_div_mod(decimal_t *from1, decimal_t *from2,
+                       decimal_t *to, decimal_t *mod, int scale_incr)
 {
   int frac1=ROUND_UP(from1->frac)*DIG_PER_DEC1, prec1=from1->intg+frac1,
       frac2=ROUND_UP(from2->frac)*DIG_PER_DEC1, prec2=from2->intg+frac2,
@@ -2171,12 +2183,9 @@ static int do_div_mod(const decimal_t *from1, const decimal_t *from2,
   }
   buf0=to->buf;
   stop0=buf0+intg0+frac0;
-  DBUG_ASSERT(stop0 <= &to->buf[to->len]);
   if (likely(div_mod))
-    while (dintg++ < 0 && buf0 < &to->buf[to->len])
-    {
+    while (dintg++ < 0)
       *buf0++=0;
-    }
 
   len1=(i=ROUND_UP(prec1))+ROUND_UP(2*frac2+scale_incr+1) + 1;
   set_if_bigger(len1, 3);
@@ -2348,8 +2357,7 @@ done:
 */
 
 int
-decimal_div(const decimal_t *from1, const decimal_t *from2, decimal_t *to,
-            int scale_incr)
+decimal_div(decimal_t *from1, decimal_t *from2, decimal_t *to, int scale_incr)
 {
   return do_div_mod(from1, from2, to, 0, scale_incr);
 }
@@ -2381,7 +2389,7 @@ decimal_div(const decimal_t *from1, const decimal_t *from2, decimal_t *to,
    thus, there's no requirement for M or N to be integers
 */
 
-int decimal_mod(const decimal_t *from1, const decimal_t *from2, decimal_t *to)
+int decimal_mod(decimal_t *from1, decimal_t *from2, decimal_t *to)
 {
   return do_div_mod(from1, from2, 0, to, 0);
 }
@@ -2401,6 +2409,7 @@ void dump_decimal(decimal_t *d)
   printf("%09d} */ ", d->buf[i]);
 }
 
+
 void check_result_code(int actual, int want)
 {
   if (actual != want)
@@ -2409,6 +2418,7 @@ void check_result_code(int actual, int want)
     exit(1);
   }
 }
+
 
 void print_decimal(decimal_t *d, const char *orig, int actual, int want)
 {
@@ -2703,6 +2713,7 @@ void test_ro(const char *s1, int n, decimal_round_mode mode, const char *orig,
   printf("\n");
 }
 
+
 void test_mx(int precision, int frac, const char *orig)
 {
   char s[100];
@@ -2712,6 +2723,7 @@ void test_mx(int precision, int frac, const char *orig)
   print_decimal(&a, orig, 0, 0);
   printf("\n");
 }
+
 
 void test_pr(const char *s1, int prec, int dec, char filler, const char *orig,
              int ex)
@@ -2736,6 +2748,7 @@ void test_pr(const char *s1, int prec, int dec, char filler, const char *orig,
   printf("\n");
 }
 
+
 void test_sh(const char *s1, int shift, const char *orig, int ex)
 {
   char s[100], *end;
@@ -2749,6 +2762,7 @@ void test_sh(const char *s1, int shift, const char *orig, int ex)
   printf("\n");
 }
 
+
 void test_fr(const char *s1, const char *orig)
 {
   char s[100], *end;
@@ -2760,6 +2774,7 @@ void test_fr(const char *s1, const char *orig)
   print_decimal(&a, orig, 0, 0);
   printf("\n");
 }
+
 
 int main()
 {
@@ -2916,6 +2931,7 @@ int main()
   test_d2b2d("111111111.11", 10, 2,"11111111.11", 0);
   test_d2b2d("000000000.01", 7, 3,"0.010", 0);
   test_d2b2d("123.4", 10, 2, "123.40", 0);
+
 
   printf("==== decimal_cmp ====\n");
   test_dc("12","13",-1);

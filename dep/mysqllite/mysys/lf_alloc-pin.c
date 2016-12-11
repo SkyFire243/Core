@@ -1,5 +1,5 @@
 /* QQ: TODO multi-pinbox */
-/* Copyright (c) 2006, 2011, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (C) 2006-2008 MySQL AB, 2008-2009 Sun Microsystems, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 /*
   wait-free concurrent allocator based on pinning addresses
@@ -146,7 +146,6 @@ void lf_pinbox_destroy(LF_PINBOX *pinbox)
 */
 LF_PINS *_lf_pinbox_get_pins(LF_PINBOX *pinbox)
 {
-  struct st_my_thread_var *var;
   uint32 pins, next, top_ver;
   LF_PINS *el;
   /*
@@ -189,12 +188,7 @@ LF_PINS *_lf_pinbox_get_pins(LF_PINBOX *pinbox)
   el->link= pins;
   el->purgatory_count= 0;
   el->pinbox= pinbox;
-  var= my_thread_var;
-  /*
-    Threads that do not call my_thread_init() should still be
-    able to use the LF_HASH.
-  */
-  el->stack_ends_here= (var ? & var->stack_ends_here : NULL);
+  el->stack_ends_here= & my_thread_var->stack_ends_here;
   return el;
 }
 
@@ -333,36 +327,34 @@ static int match_pins(LF_PINS *el, void *addr)
 */
 static void _lf_pinbox_real_free(LF_PINS *pins)
 {
-  int npins;
-  void *list;
-  void **addr= NULL;
+  int npins, alloca_size;
+  void *list, **addr;
   void *first= NULL, *last= NULL;
   LF_PINBOX *pinbox= pins->pinbox;
 
   npins= pinbox->pins_in_array+1;
 
 #ifdef HAVE_ALLOCA
-  if (pins->stack_ends_here != NULL)
+  alloca_size= sizeof(void *)*LF_PINBOX_PINS*npins;
+  /* create a sorted list of pinned addresses, to speed up searches */
+  if (available_stack_size(&pinbox, *pins->stack_ends_here) > alloca_size)
   {
-    int alloca_size= sizeof(void *)*LF_PINBOX_PINS*npins;
-    /* create a sorted list of pinned addresses, to speed up searches */
-    if (available_stack_size(&pinbox, *pins->stack_ends_here) > alloca_size)
-    {
-      struct st_harvester hv;
-      addr= (void **) alloca(alloca_size);
-      hv.granary= addr;
-      hv.npins= npins;
-      /* scan the dynarray and accumulate all pinned addresses */
-      _lf_dynarray_iterate(&pinbox->pinarray,
-                           (lf_dynarray_func)harvest_pins, &hv);
+    struct st_harvester hv;
+    addr= (void **) alloca(alloca_size);
+    hv.granary= addr;
+    hv.npins= npins;
+    /* scan the dynarray and accumulate all pinned addresses */
+    _lf_dynarray_iterate(&pinbox->pinarray,
+                         (lf_dynarray_func)harvest_pins, &hv);
 
-      npins= hv.granary-addr;
-      /* and sort them */
-      if (npins)
-        qsort(addr, npins, sizeof(void *), (qsort_cmp)ptr_cmp);
-    }
+    npins= hv.granary-addr;
+    /* and sort them */
+    if (npins)
+      qsort(addr, npins, sizeof(void *), (qsort_cmp)ptr_cmp);
   }
+  else
 #endif
+    addr= 0;
 
   list= pins->purgatory;
   pins->purgatory= 0;
@@ -532,3 +524,4 @@ uint lf_alloc_pool_count(LF_ALLOCATOR *allocator)
     /* no op */;
   return i;
 }
+

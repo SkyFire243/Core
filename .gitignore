@@ -6,6 +6,8 @@ build*/
 *~
 .hg/
 *.kdev*
+.DS_Store
+CMakeLists.txt.user
 *.bak
 *.patch
 *.diff

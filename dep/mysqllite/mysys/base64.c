@@ -1,5 +1,4 @@
-/* Copyright (c) 2003-2008 MySQL AB, 2009 Sun Microsystems, Inc.
-   Use is subject to license terms.
+/* Copyright (C) 2003 MySQL AB
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,7 +11,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 #include <my_global.h>
 #include <m_string.h>  /* strchr() */
@@ -24,6 +23,7 @@
 static char base64_table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                              "abcdefghijklmnopqrstuvwxyz"
                              "0123456789+/";
+
 
 int
 base64_needed_encoded_length(int length_of_data)
@@ -37,11 +37,13 @@ base64_needed_encoded_length(int length_of_data)
     1;                           /* NUL termination of string */
 }
 
+
 int
 base64_needed_decoded_length(int length_of_encoded_data)
 {
   return (int) ceil(length_of_encoded_data * 3 / 4);
 }
+
 
 /*
   Encode a data as base64.
@@ -97,11 +99,13 @@ base64_encode(const void *src, size_t src_len, char *dst)
   return 0;
 }
 
+
 static inline uint
 pos(unsigned char c)
 {
   return (uint) (strchr(base64_table, c) - base64_table);
 }
+
 
 #define SKIP_SPACE(src, i, size)                                \
 {                                                               \
@@ -115,6 +119,7 @@ pos(unsigned char c)
     break;                                                      \
   }                                                             \
 }
+
 
 /*
   Decode a base64 string
@@ -221,6 +226,7 @@ base64_decode(const char *src_base, size_t len,
   return i != len ? -1 : (int) (d - dst_base);
 }
 
+
 #else /* MAIN */
 
 #define require(b) { \
@@ -229,6 +235,7 @@ base64_decode(const char *src_base, size_t len,
     abort(); \
   } \
 }
+
 
 int
 main(void)
