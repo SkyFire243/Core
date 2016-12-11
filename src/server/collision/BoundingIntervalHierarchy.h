@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2010-2013 Project SkyFire <https://www.projectskyfire.org/>
- * Copyright (C) 2010-2013 Oregon <http://www.oregoncore.com/>
- * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2013 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2016 Project SkyFire <http://www.projectskyfire.org/>
+ * Copyright (C) 2008-2016 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2005-2016 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
+ * Free Software Foundation; either version 3 of the License, or (at your
  * option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -21,9 +20,9 @@
 #ifndef _BIH_H
 #define _BIH_H
 
-#include <G3D/Vector3.h>
-#include <G3D/Ray.h>
-#include <G3D/AABox.h>
+#include "G3D/Vector3.h"
+#include "G3D/Ray.h"
+#include "G3D/AABox.h"
 
 #include "Define.h"
 
@@ -34,16 +33,6 @@
 #include <cmath>
 
 #define MAX_STACK_SIZE 64
-
-#ifdef _MSC_VER
-    #define isnan(x) _isnan(x)
-#else
-    #define isnan(x) std::isnan(x)
-#endif
-
-using G3D::Vector3;
-using G3D::AABox;
-using G3D::Ray;
 
 static inline uint32 floatToRawIntBits(float f)
 {
@@ -69,35 +58,47 @@ static inline float intBitsToFloat(uint32 i)
 
 struct AABound
 {
-    Vector3 lo, hi;
+    G3D::Vector3 lo, hi;
 };
 
-/* Bounding Interval Hierarchy Class.
-   Building and Ray-Intersection functions based on BIH from
-   Sunflow, a Java Raytracer, released under MIT/X11 License
-   http://sunflow.sourceforge.net/
-   Copyright (c) 2003-2007 Christopher Kulla
+/** Bounding Interval Hierarchy Class.
+    Building and Ray-Intersection functions based on BIH from
+    Sunflow, a Java Raytracer, released under MIT/X11 License
+    http://sunflow.sourceforge.net/
+    Copyright (c) 2003-2007 Christopher Kulla
 */
 
 class BIH
 {
+    private:
+        void init_empty()
+        {
+            tree.clear();
+            objects.clear();
+            // create space for the first node
+            tree.push_back(3u << 30u); // dummy leaf
+            tree.insert(tree.end(), 2, 0);
+        }
     public:
-        BIH() {};
-        template< class T, class BoundsFunc >
-        void build(const std::vector<T> &primitives, BoundsFunc &getBounds, uint32 leafSize = 3, bool printStats=false)
+        BIH() { init_empty(); }
+        template< class BoundsFunc, class PrimArray >
+        void build(const PrimArray &primitives, BoundsFunc &getBounds, uint32 leafSize = 3, bool printStats=false)
         {
             if (primitives.size() == 0)
+            {
+                init_empty();
                 return;
+            }
+
             buildData dat;
             dat.maxPrims = leafSize;
             dat.numPrims = primitives.size();
             dat.indices = new uint32[dat.numPrims];
-            dat.primBound = new AABox[dat.numPrims];
+            dat.primBound = new G3D::AABox[dat.numPrims];
             getBounds(primitives[0], bounds);
-            for (uint32 i = 0; i < dat.numPrims; ++i)
+            for (uint32 i=0; i<dat.numPrims; ++i)
             {
                 dat.indices[i] = i;
-                AABox tb;
                 getBounds(primitives[i], dat.primBound[i]);
                 bounds.merge(dat.primBound[i]);
             }
@@ -108,27 +109,27 @@ class BIH
                 stats.printStats();
 
             objects.resize(dat.numPrims);
-            for (uint32 i = 0; i < dat.numPrims; ++i)
+            for (uint32 i=0; i<dat.numPrims; ++i)
                 objects[i] = dat.indices[i];
             //nObjects = dat.numPrims;
             tree = tempTree;
             delete[] dat.primBound;
             delete[] dat.indices;
         }
-        uint32 primCount() { return objects.size(); }
+        uint32 primCount() const { return objects.size(); }
 
         template<typename RayCallback>
-        void intersectRay(const Ray &r, RayCallback& intersectCallback, float &maxDist, bool stopAtFirst=false) const
+        void intersectRay(const G3D::Ray &r, RayCallback& intersectCallback, float &maxDist, bool stopAtFirst=false) const
         {
             float intervalMin = -1.f;
             float intervalMax = -1.f;
-            Vector3 org = r.origin();
-            Vector3 dir = r.direction();
-            Vector3 invDir;
-            for (int i = 0; i < 3; ++i)
+            G3D::Vector3 org = r.origin();
+            G3D::Vector3 dir = r.direction();
+            G3D::Vector3 invDir;
+            for (int i=0; i<3; ++i)
             {
                 invDir[i] = 1.f / dir[i];
-                if (dir[i] != 0.f)
+                if (G3D::fuzzyNe(dir[i], 0.0f))
                 {
                     float t1 = (bounds.low()[i]  - org[i]) * invDir[i];
                     float t2 = (bounds.high()[i] - org[i]) * invDir[i];
@@ -156,7 +157,7 @@ class BIH
             uint32 offsetBack3[3];
             // compute custom offsets from direction sign bit
 
-            for (int i = 0; i < 3; ++i)
+            for (int i=0; i<3; ++i)
             {
                 offsetFront[i] = floatToRawIntBits(dir[i]) >> 31;
                 offsetBack[i] = offsetFront[i] ^ 1;
@@ -257,7 +258,7 @@ class BIH
         }
 
         template<typename IsectCallback>
-        void intersectPoint(const Vector3 &p, IsectCallback& intersectCallback) const
+        void intersectPoint(const G3D::Vector3 &p, IsectCallback& intersectCallback) const
         {
             if (!bounds.contains(p))
                 return;
@@ -334,18 +335,18 @@ class BIH
             }
         }
 
-        bool writeToFile(FILE *wf) const;
-        bool readFromFile(FILE *rf);
+        bool writeToFile(FILE* wf) const;
+        bool readFromFile(FILE* rf);
 
     protected:
         std::vector<uint32> tree;
         std::vector<uint32> objects;
-        AABox bounds;
+        G3D::AABox bounds;
 
         struct buildData
         {
             uint32 *indices;
-            AABox *primBound;
+            G3D::AABox *primBound;
             uint32 numPrims;
             int maxPrims;
         };
@@ -376,7 +377,7 @@ class BIH
                 maxObjects(0xFFFFFFFF), sumDepth(0), minDepth(0x0FFFFFFF),
                 maxDepth(0xFFFFFFFF), numBVH2(0)
             {
-                for (int i = 0; i < 6; ++i) numLeavesN[i] = 0;
+                for (int i=0; i<6; ++i) numLeavesN[i] = 0;
             }
 
             void updateInner() { numNodes++; }
@@ -387,7 +388,8 @@ class BIH
 
         void buildHierarchy(std::vector<uint32> &tempTree, buildData &dat, BuildStats &stats);
 
-        void createNode(std::vector<uint32> &tempTree, int nodeIndex, uint32 left, uint32 right) {
+        void createNode(std::vector<uint32> &tempTree, int nodeIndex, uint32 left, uint32 right) const
+        {
             // write leaf node
             tempTree[nodeIndex + 0] = (3 << 30) | left;
             tempTree[nodeIndex + 1] = right - left + 1;
@@ -397,4 +399,3 @@ class BIH
 };
 
 #endif // _BIH_H
-

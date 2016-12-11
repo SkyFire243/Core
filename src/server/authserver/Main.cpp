@@ -16,6 +16,13 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+ 
+#include <ace/Dev_Poll_Reactor.h>
+#include <ace/TP_Reactor.h>
+#include <ace/ACE.h>
+#include <ace/Sig_Handler.h>
+#include <openssl/opensslv.h>
+#include <openssl/crypto.h>
 
 #include "Common.h"
 #include "DatabaseEnv.h"
@@ -27,12 +34,11 @@
 #include "RealmList.h"
 #include "RealmAcceptor.h"
 
-#include <ace/Dev_Poll_Reactor.h>
-#include <ace/TP_Reactor.h>
-#include <ace/ACE.h>
-#include <ace/Sig_Handler.h>
-#include <openssl/opensslv.h>
-#include <openssl/crypto.h>
+#ifdef __linux__
+#include <sched.h>
+#include <sys/resource.h>
+#define PROCESS_HIGH_PRIORITY -15 // [-20, 19], default is 0
+#endif
 
 #ifndef _AUTHSERVER_CONFIG
 # define _AUTHSERVER_CONFIG  "authserver.conf"

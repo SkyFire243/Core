@@ -26,7 +26,7 @@
 
 #include "NodeValueAccess.h"
 
-/*
+/**
 The Class is mainly taken from G3D/AABSPTree.h but modified to be able to use our internal data structure.
 This is an iterator that helps us analysing the BSP-Trees.
 The collision detection is modified to return true, if we are inside an object.
@@ -46,6 +46,10 @@ namespace VMAP
         }
     };
 
+    //==============================================================
+    //==============================================================
+    //==============================================================
+
     class MyCollisionDetection
     {
     private:
@@ -58,6 +62,7 @@ namespace VMAP
             G3D::Vector3&           location,
             bool&                   Inside)
         {
+
             // Integer representation of a floating-point value.
 #define IR(x)   (reinterpret_cast<G3D::uint32 const&>(x))
 
