@@ -111,11 +111,13 @@ elseif( WIN32 )
 endif()
 
 # Generate precompiled header
-if( USE_COREPCH )
+if( USE_SCRIPTPCH )
   if(CMAKE_COMPILER_IS_GNUCXX)
-    add_precompiled_header(authserver ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders/authPCH.h)
+    add_precompiled_header(scripts ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders/ScriptPCH.h)
+  elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    add_clang_pch(scripts "${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders" "ScriptPCH.h" "ScriptPCH.cpp")
   elseif(MSVC)
-    add_native_precompiled_header(authserver ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders/authPCH)
+    add_native_precompiled_header(scripts ${CMAKE_CURRENT_SOURCE_DIR}/PrecompiledHeaders/ScriptPCH)
   endif()
 endif()
 
