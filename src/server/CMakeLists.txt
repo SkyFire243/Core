@@ -26,12 +26,11 @@ if(WIN32)
 endif(WIN32)
 
 if(TOOLS)
-  add_subdirectory(tools)
+  add_subdirectory(collision)
 endif(TOOLS)
 
 add_subdirectory(shared)
 add_subdirectory(game)
-add_subdirectory(collision)
 add_subdirectory(authserver)
 add_subdirectory(scripts)
 add_subdirectory(worldserver)
