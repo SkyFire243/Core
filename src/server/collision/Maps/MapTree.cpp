@@ -32,22 +32,25 @@ using G3D::Vector3;
 
 namespace VMAP
 {
-    class MapRayCallback
-    {
-        public:
-            MapRayCallback(ModelInstance *val): prims(val), hit(false) {}
-            bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit=true)
-            {
-                bool result = prims[entry].intersectRay(ray, distance, pStopAtFirstHit);
-                if (result)
-                    hit = true;
-                return result;
-            }
-            bool didHit() { return hit; }
-        protected:
-            ModelInstance *prims;
-            bool hit;
-    };
+    +class MapRayCallback
+ -    {		 +{
+ -        public:		 +    public:
+ -            MapRayCallback(ModelInstance *val): prims(val), hit(false) {}		 +        MapRayCallback(ModelInstance* val): prims(val), hit(false) {}
+ -            bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit=true)		 +        bool operator()(const G3D::Ray& ray, uint32 entry, float& distance, bool pStopAtFirstHit = true)
+ -            {		 +        {
+ -                bool result = prims[entry].intersectRay(ray, distance, pStopAtFirstHit);		 +            bool result = prims[entry].intersectRay(ray, distance, pStopAtFirstHit);
+ -                if (result)		 +            if (result)
+ -                    hit = true;		 +                hit = true;
+ -                return result;		 +            return result;
+ -            }		 +        }
+ -            bool didHit() { return hit; }		 +        bool didHit()
+ -        protected:		 +        {
+ -            ModelInstance *prims;		 +            return hit;
+ -            bool hit;		 +        }
+ -    };		 +    protected:
+ +        ModelInstance* prims;
+ +        bool hit;
+ +};
 
     class AreaInfoCallback
     {
