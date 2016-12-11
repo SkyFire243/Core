@@ -40,7 +40,7 @@ For further information on the SkyFire project, please visit our project website
 Detailed installation guides are available in the wiki for
 
 [Windows](http://wiki.projectskyfire.org/index.php?title=Installation_Windows),
-[Linux](http://wiki.projectskyfire.org/index.php?title=Installation_Linux) and
+[Linux](http://wiki.projectskyfire.org/index.php?title=Installation_Linux)
 
 ## Reporting issues
 Please use the search function before you report issues.
