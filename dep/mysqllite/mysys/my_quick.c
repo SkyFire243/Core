@@ -1,5 +1,4 @@
-/* Copyright (c) 2000, 2006, 2007 MySQL AB, 2009 Sun Microsystems, Inc.
-   Use is subject to license terms.
+/* Copyright (C) 2000 MySQL AB
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,12 +11,13 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 /* Quicker interface to read & write. Used with my_nosys.h */
 
 #include "mysys_priv.h"
 #include "my_nosys.h"
+
 
 #ifdef _WIN32
 extern size_t my_win_read(File Filedes,uchar *Buffer,size_t Count);
@@ -31,11 +31,11 @@ size_t my_quick_read(File Filedes,uchar *Buffer,size_t Count,myf MyFlags)
 #else
   readbytes= read(Filedes, Buffer, Count);
 #endif
-  if (readbytes != Count)
+  if(readbytes != Count)
   {
 #ifndef DBUG_OFF
     if ((readbytes == 0 || readbytes == (size_t) -1) && errno == EINTR)
-    {
+    {  
       DBUG_PRINT("error", ("my_quick_read() was interrupted and returned %d"
                            ".  This function does not retry the read!",
                            (int) readbytes));
@@ -46,6 +46,8 @@ size_t my_quick_read(File Filedes,uchar *Buffer,size_t Count,myf MyFlags)
   }
   return (MyFlags & (MY_NABP | MY_FNABP)) ? 0 : readbytes;
 }
+
+
 
 size_t my_quick_write(File Filedes, const uchar *Buffer, size_t Count)
 {
@@ -65,7 +67,7 @@ size_t my_quick_write(File Filedes, const uchar *Buffer, size_t Count)
   {
 #ifndef DBUG_OFF
     if ((writtenbytes == 0 || writtenbytes == (size_t) -1) && errno == EINTR)
-    {
+    {  
       DBUG_PRINT("error", ("my_quick_write() was interrupted and returned %d"
                            ".  This function does not retry the write!",
                            (int) writtenbytes));

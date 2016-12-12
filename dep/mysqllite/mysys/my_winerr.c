@@ -1,5 +1,4 @@
-/* Copyright (c) 2008 MySQL AB, 2009 Sun Microsystems, Inc.
-   Use is subject to license terms.
+/* Copyright (C) 2008 MySQL AB
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -12,7 +11,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 /*
   Convert Windows API error (GetLastError() to Posix equivalent (errno)
@@ -23,7 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 #include <my_global.h>
 #include <my_sys.h>
 
-struct errentry
+
+struct errentry 
 {
   unsigned long oscode;   /* OS return value */
   int sysv_errno;  /* System V error code */
@@ -90,14 +90,15 @@ access violations */
 #define MIN_EACCES_RANGE ERROR_WRITE_PROTECT
 #define MAX_EACCES_RANGE ERROR_SHARING_BUFFER_EXCEEDED
 
+
 static int get_errno_from_oserr(unsigned long oserrno)
 {
   int i;
 
   /* check the table for the OS error code */
-  for (i= 0; i < ERRTABLESIZE; ++i)
+  for (i= 0; i < ERRTABLESIZE; ++i) 
   {
-    if (oserrno == errtable[i].oscode)
+    if (oserrno == errtable[i].oscode) 
     {
       return  errtable[i].sysv_errno;
     }

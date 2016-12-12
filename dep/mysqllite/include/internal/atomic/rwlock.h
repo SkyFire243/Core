@@ -1,8 +1,7 @@
 #ifndef ATOMIC_RWLOCK_INCLUDED
 #define ATOMIC_RWLOCK_INCLUDED
 
-/* Copyright (c) 2006 MySQL AB, 2009 Sun Microsystems, Inc.
-   Use is subject to license terms.
+/* Copyright (C) 2006 MySQL AB, 2009 Sun Microsystems, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,7 +14,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 #define MY_ATOMIC_MODE_RWLOCKS 1
 

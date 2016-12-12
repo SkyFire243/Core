@@ -1,5 +1,4 @@
-/* Copyright (c) 2000-2003, 2006 MySQL AB
-   Use is subject to license terms.
+/* Copyright (C) 2000 MySQL AB
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,7 +11,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 
 /*
   str2int(src, radix, lower, upper, &val)
@@ -25,9 +24,9 @@
 
   If an error is detected, the result will be NullS, the value put
   in val will be 0, and errno will be set to
-    EDOM	if there are no digits
-    ERANGE	if the result would overflow or otherwise fail to lie
-        within the specified bounds.
+	EDOM	if there are no digits
+	ERANGE	if the result would overflow or otherwise fail to lie
+		within the specified bounds.
   Check that the bounds are right for your machine.
   This looks amazingly complicated for what you probably thought was an
   easy task.  Coping with integer overflow and the asymmetric range of
@@ -45,12 +44,12 @@
 #include <errno.h>
 
 #define char_val(X) (X >= '0' && X <= '9' ? X-'0' :\
-             X >= 'A' && X <= 'Z' ? X-'A'+10 :\
-             X >= 'a' && X <= 'z' ? X-'a'+10 :\
-             '\177')
+		     X >= 'A' && X <= 'Z' ? X-'A'+10 :\
+		     X >= 'a' && X <= 'z' ? X-'a'+10 :\
+		     '\177')
 
 char *str2int(register const char *src, register int radix, long int lower,
-          long int upper, long int *val)
+	      long int upper, long int *val)
 {
   int sign;			/* is number negative (+1) or positive (-1) */
   int n;			/* number of digits yet to be converted */
@@ -180,7 +179,7 @@ char *str2int(register const char *src, register int radix, long int lower,
   return (char*) src;
 }
 
-    /* Theese are so slow compared with ordinary, optimized atoi */
+	/* Theese are so slow compared with ordinary, optimized atoi */
 
 #ifdef WANT_OUR_ATOI
 
@@ -190,6 +189,7 @@ int atoi(const char *src)
   str2int(src, 10, (long) INT_MIN, (long) INT_MAX, &val);
   return (int) val;
 }
+
 
 long atol(const char *src)
 {
